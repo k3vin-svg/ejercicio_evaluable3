@@ -5,3 +5,6 @@ porque por defecto al inicializar si no le damos un valor nos da 0 --> y eso es 
 
 
 comandos -aNm --> 
+rpcgen -aNM claveRPC.x
+Diferencia entre sockets y RPC
+En sockets teniammos que hacerlo de forma manual, en RPC no. Lo hace de forma automática
