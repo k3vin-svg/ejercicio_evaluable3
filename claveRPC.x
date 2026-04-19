@@ -1,29 +1,29 @@
-/* Estructura equivalente a struct Paquete de claves.h */
+/*estructura Paquete de claves.h */
 struct paquete_rpc {
     int x_rpc;
     int y_rpc;
-    int valor3;
+    int z_rpc;
 };
 
-/* Argumentos para empaquetar los datos de set_value y modify_value */
+/*argumentos para empaquetar los datos de set_value y modify_value */
 struct set_value_args {
-    string key<256>;         /* Cadena de hasta 255 caracteres + \0 */
-    string value1<256>;      /* Cadena de hasta 255 caracteres + \0 */
-    int N_value2;            /* Número de elementos del vector */
-    float V_value2<32>;      /* Vector dinámico de floats (máximo 32) */
-    paquete_rpc value3;      /* El struct paquete */
+    string key<256>;        
+    string value1<256>;     
+    int N_value2;           
+    float V_value2<32>;     
+    paquete_rpc value3;     
 };
 
-/* Estructura para devolver los datos en get_value */
+/*estructura para devolver los datos en get_value */
 struct get_value_res {
-    int codigo_error;        /* 0 si éxito, -1 si error */
+    int codigo_error;       
     string value1<256>;
     int N_value2;
     float V_value2<32>;
     paquete_rpc value3;
 };
 
-/* Definición del programa RPC y sus funciones remotas */
+/*definición del programa RPC y sus funciones*/
 program CLAVES_PROG {
     version CLAVES_VERS {
         int SET_VALUE(set_value_args) = 1;

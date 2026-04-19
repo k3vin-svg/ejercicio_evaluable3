@@ -8,3 +8,7 @@ comandos -aNm -->
 rpcgen -aNM claveRPC.x
 Diferencia entre sockets y RPC
 En sockets teniammos que hacerlo de forma manual, en RPC no. Lo hace de forma automática
+
+
+para sockets lo que chocaba es mandar numeros enteros --> faltaba eso
+Ahora en rpc ya no hace falta

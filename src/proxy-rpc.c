@@ -50,7 +50,6 @@ int set_value(char *key, char *value1, int N_value2, float *V_value2, struct Paq
     args.value3.y_rpc = value3.y;
     args.value3.z_rpc = value3.z;
 
-
     resultado = set_value_1(&args, cliente);
 
     /*comprobamos errores de red */
