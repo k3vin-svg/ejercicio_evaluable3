@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "claves.h"       
-#include "../claveRPC.h"    
+#include "clavesRPC.h"    
 
 /*variable global para mantener la conexion con el servidor RPC */
 static CLIENT *cliente = NULL;
@@ -31,7 +31,7 @@ static int conectar_servidor() {
 
 int set_value(char *key, char *value1, int N_value2, float *V_value2, struct Paquete value3) {
     struct set_value_args args;
-    int *resultado;
+    enum clnt_stat resultado;
 
     /*conectamos el servidor*/
     if (conectar_servidor() == -1) return -1;
@@ -50,15 +50,16 @@ int set_value(char *key, char *value1, int N_value2, float *V_value2, struct Paq
     args.value3.y_rpc = value3.y;
     args.value3.z_rpc = value3.z;
 
-    resultado = set_value_1(&args, cliente);
+    int ret = 0;
+    resultado = set_value_1(args,&ret, cliente);
 
     /*comprobamos errores de red */
-    if (resultado == NULL) {
+    if (resultado == RPC_SUCCESS) {
         clnt_perror(cliente, "Error en set_value_1");
         return -1;
     }
 
-    return *resultado;
+    return ret;
 }
 
 int delete_key(char *key) {
@@ -108,7 +109,7 @@ int get_value(char *key, char *value1, int *N_value2, float *V_value2, struct Pa
 }
 
 int modify_value(char *key, char *value1, int N_value2, float *V_value2, struct Paquete value3){
-    struct modify_value_args args;
+    set_value_args args;
     int *resultado;
     if (conectar_servidor() == -1) return -1;
     /*copiamos los datos a nuestra estructura RPC*/

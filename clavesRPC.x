@@ -31,6 +31,6 @@ program CLAVES_PROG {
         int MODIFY_VALUE(set_value_args) = 3;
         int DELETE_KEY(string key<256>) = 4;
         int EXIST(string key<256>) = 5;
-        int DESTROY(void) = 6;
+        int DESTROY() = 6;
     } = 1;
 } = 0x20000001; /* Número de programa único */
