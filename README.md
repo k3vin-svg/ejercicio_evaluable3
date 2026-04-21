@@ -12,3 +12,7 @@ En sockets teniammos que hacerlo de forma manual, en RPC no. Lo hace de forma au
 
 para sockets lo que chocaba es mandar numeros enteros --> faltaba eso
 Ahora en rpc ya no hace falta
+
+
+declaramos struct porque es una estructura completa --> muchos argumentos en la funcion
+sin embargo cuando hay funciones con solo char *key --> 

@@ -67,7 +67,7 @@ int delete_key(char *key) {
 
     if (conectar_servidor() == -1) return -1;
 
-    /* Le pasamos la clave y el cliente */
+    /*le pasamos la clave y el cliente*/
     resultado = delete_key_1(&arg_key, cliente);
 
     if (resultado == NULL) {
@@ -88,7 +88,6 @@ int get_value(char *key, char *value1, int *N_value2, float *V_value2, struct Pa
         clnt_perror(cliente, "Error en get_value_1");
         return -1;
     }
-
     /*si el servidor nos dice que la clave no existe, devolvemos error */
     if (resultado->codigo_error == -1) {
         return -1;
@@ -100,10 +99,62 @@ int get_value(char *key, char *value1, int *N_value2, float *V_value2, struct Pa
     
     /*copiamos el vector */
     memcpy(V_value2, resultado->V_value2.V_value2_val, (*N_value2) * sizeof(float));
-
+    /*copiamos los valores de la estructura paquete*/
     value3->x = resultado->value3.x_rpc;
     value3->y = resultado->value3.y_rpc;
     value3->z = resultado->value3.z_rpc;
 
     return 0;
+}
+
+int modify_value(char *key, char *value1, int N_value2, float *V_value2, struct Paquete value3){
+    struct modify_value_args args;
+    int *resultado;
+    if (conectar_servidor() == -1) return -1;
+    /*copiamos los datos a nuestra estructura RPC*/
+    args.key = key;
+    args.value1 = value1;
+    args.N_value2 = N_value2;
+    
+    /*copiamos los arrays dinámicos :tamaño y datos*/
+    args.V_value2.V_value2_len = N_value2;
+    args.V_value2.V_value2_val = V_value2;
+    
+    /*copiamos nuestro struct inicial */
+    args.value3.x_rpc = value3.x;
+    args.value3.y_rpc = value3.y;
+    args.value3.z_rpc = value3.z;
+
+    resultado = modify_value_1(&args, cliente);
+    if (resultado == NULL) {
+        clnt_perror(cliente, "Error en modify_value_1");
+        return -1;
+    }
+    return *resultado;
+
+
+}
+
+int exist(char *key){
+    char *arg_key = key;
+    int *resultado;
+    if (conectar_servidor() == -1) return -1;
+    resultado = exist_1(&arg_key, cliente);
+    if (resultado == NULL) {
+        clnt_perror(cliente, "Error en exist_1");
+        return -1;
+    }
+    return *resultado;
+}
+
+int destroy(void){
+    int *resultado;
+    if (conectar_servidor() == -1) return -1;
+    resultado = destroy_1(cliente);
+    if (resultado == NULL) {
+        clnt_perror(cliente, "Error en destroy_1");
+        return -1;
+    }
+    return *resultado;
+
 }
