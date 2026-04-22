@@ -54,7 +54,7 @@ int set_value(char *key, char *value1, int N_value2, float *V_value2, struct Paq
     resultado = set_value_1(args,&ret, cliente);
 
     /*comprobamos errores de red */
-    if (resultado == RPC_SUCCESS) {
+    if (resultado != RPC_SUCCESS) {
         clnt_perror(cliente, "Error en set_value_1");
         return -1;
     }
@@ -63,54 +63,56 @@ int set_value(char *key, char *value1, int N_value2, float *V_value2, struct Paq
 }
 
 int delete_key(char *key) {
-    int *resultado;
-    char *arg_key = key; 
+    enum clnt_stat resultado;
+    int ret = 0; 
 
     if (conectar_servidor() == -1) return -1;
 
     /*le pasamos la clave y el cliente*/
-    resultado = delete_key_1(&arg_key, cliente);
+    resultado = delete_key_1(key, &ret, cliente);
 
-    if (resultado == NULL) {
+    if (resultado != RPC_SUCCESS) {
         clnt_perror(cliente, "Error en delete_key_1");
         return -1;
     }
 
-    return *resultado;
+    return ret;
 }
 
 int get_value(char *key, char *value1, int *N_value2, float *V_value2, struct Paquete *value3) {
-    char *arg_key = key;
-    struct get_value_res *resultado; 
+    enum clnt_stat resultado_rpc;
+    get_value_res resultado; 
     if (conectar_servidor() == -1) return -1;
 
-    resultado = get_value_1(&arg_key, cliente);
-    if (resultado == NULL) {
+    resultado_rpc = get_value_1(key, &resultado, cliente);
+    if (resultado_rpc != RPC_SUCCESS) {
         clnt_perror(cliente, "Error en get_value_1");
         return -1;
     }
     /*si el servidor nos dice que la clave no existe, devolvemos error */
-    if (resultado->codigo_error == -1) {
+    if (resultado.codigo_error == -1) {
         return -1;
     }
 
     /*si existe, copiamos los datos que nos trajo RPC a nuestras variables locales */
-    strcpy(value1, resultado->value1);
-    *N_value2 = resultado->N_value2;
+    strcpy(value1, resultado.value1);
+    *N_value2 = resultado.N_value2;
     
     /*copiamos el vector */
-    memcpy(V_value2, resultado->V_value2.V_value2_val, (*N_value2) * sizeof(float));
+    memcpy(V_value2, resultado.V_value2.V_value2_val, (*N_value2) * sizeof(float));
     /*copiamos los valores de la estructura paquete*/
-    value3->x = resultado->value3.x_rpc;
-    value3->y = resultado->value3.y_rpc;
-    value3->z = resultado->value3.z_rpc;
+    value3->x = resultado.value3.x_rpc;
+    value3->y = resultado.value3.y_rpc;
+    value3->z = resultado.value3.z_rpc;
 
     return 0;
 }
 
 int modify_value(char *key, char *value1, int N_value2, float *V_value2, struct Paquete value3){
     set_value_args args;
-    int *resultado;
+    enum clnt_stat resultado;
+    int ret = 0;
+
     if (conectar_servidor() == -1) return -1;
     /*copiamos los datos a nuestra estructura RPC*/
     args.key = key;
@@ -126,36 +128,39 @@ int modify_value(char *key, char *value1, int N_value2, float *V_value2, struct 
     args.value3.y_rpc = value3.y;
     args.value3.z_rpc = value3.z;
 
-    resultado = modify_value_1(&args, cliente);
-    if (resultado == NULL) {
+    resultado = modify_value_1(args, &ret, cliente);
+    if (resultado != RPC_SUCCESS) {
         clnt_perror(cliente, "Error en modify_value_1");
         return -1;
     }
-    return *resultado;
+    return ret;
 
 
 }
 
 int exist(char *key){
-    char *arg_key = key;
-    int *resultado;
+    enum clnt_stat resultado;
+    int ret = 0;
+
     if (conectar_servidor() == -1) return -1;
-    resultado = exist_1(&arg_key, cliente);
-    if (resultado == NULL) {
+    resultado = exist_1(key, &ret, cliente);
+    if (resultado != RPC_SUCCESS) {
         clnt_perror(cliente, "Error en exist_1");
         return -1;
     }
-    return *resultado;
+    return ret;
 }
 
 int destroy(void){
-    int *resultado;
+    enum clnt_stat resultado;
+    int ret = 0;
+
     if (conectar_servidor() == -1) return -1;
-    resultado = destroy_1(cliente);
-    if (resultado == NULL) {
+    resultado = destroy_1(&ret, cliente);
+    if (resultado != RPC_SUCCESS) {
         clnt_perror(cliente, "Error en destroy_1");
         return -1;
     }
-    return *resultado;
+    return ret;
 
 }
