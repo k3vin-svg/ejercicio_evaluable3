@@ -84,6 +84,8 @@ int get_value(char *key, char *value1, int *N_value2, float *V_value2, struct Pa
     get_value_res resultado; 
     if (conectar_servidor() == -1) return -1;
 
+    memset(&resultado, 0, sizeof(resultado));
+
     resultado_rpc = get_value_1(key, &resultado, cliente);
     if (resultado_rpc != RPC_SUCCESS) {
         clnt_perror(cliente, "Error en get_value_1");
@@ -91,6 +93,7 @@ int get_value(char *key, char *value1, int *N_value2, float *V_value2, struct Pa
     }
     /*si el servidor nos dice que la clave no existe, devolvemos error */
     if (resultado.codigo_error == -1) {
+        xdr_free((xdrproc_t)xdr_get_value_res, (char *)&resultado);
         return -1;
     }
 
@@ -104,6 +107,8 @@ int get_value(char *key, char *value1, int *N_value2, float *V_value2, struct Pa
     value3->x = resultado.value3.x_rpc;
     value3->y = resultado.value3.y_rpc;
     value3->z = resultado.value3.z_rpc;
+
+    xdr_free((xdrproc_t)xdr_get_value_res, (char *)&resultado);
 
     return 0;
 }

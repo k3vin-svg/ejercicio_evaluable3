@@ -13,38 +13,36 @@
 bool_t
 set_value_1_svc(set_value_args arg1, int *result,  struct svc_req *rqstp)
 {
-	bool_t retval;
+	struct Paquete p;
+    p.x = arg1.value3.x_rpc;
+    p.y = arg1.value3.y_rpc;
+    p.z = arg1.value3.z_rpc;
 
-	/*
-	 * insert server code here
-	 */
-
-	return retval;
+    *result = set_value(arg1.key, arg1.value1, arg1.N_value2, arg1.V_value2.V_value2_val, p);
+    return TRUE;
 }
+
 
 bool_t
-get_value_1_svc(char *key, get_value_res *result,  struct svc_req *rqstp)
+get_value_1_svc(char *key, get_value_res *result, struct svc_req *rqstp)
 {
-	bool_t retval;
 
-	/*
-	 * insert server code here
-	 */
-
-	return retval;
+    return TRUE;
 }
+
 
 bool_t
 modify_value_1_svc(set_value_args arg1, int *result,  struct svc_req *rqstp)
 {
-	bool_t retval;
+	struct Paquete p;
+	p.x = arg1.value3.x_rpc;
+    p.y = arg1.value3.y_rpc;
+    p.z = arg1.value3.z_rpc;
 
-	/*
-	 * insert server code here
-	 */
-
-	return retval;
+    *result = modify_value(arg1.key, arg1.value1, arg1.N_value2, arg1.V_value2.V_value2_val, p);
+    return TRUE;
 }
+
 
 bool_t
 delete_key_1_svc(char *key, int *result,  struct svc_req *rqstp)
@@ -73,10 +71,5 @@ int
 claves_prog_1_freeresult (SVCXPRT *transp, xdrproc_t xdr_result, caddr_t result)
 {
 	xdr_free (xdr_result, result);
-
-	/*
-	 * Insert additional freeing code here, if needed
-	 */
-
 	return 1;
 }
