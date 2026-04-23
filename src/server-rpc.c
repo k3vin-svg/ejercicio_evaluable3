@@ -26,7 +26,36 @@ set_value_1_svc(set_value_args arg1, int *result,  struct svc_req *rqstp)
 bool_t
 get_value_1_svc(char *key, get_value_res *result, struct svc_req *rqstp)
 {
+    char value1[256];
+    int N_value2;
+    float V_value2[32];
+    struct Paquete p;
+	result->value1 = NULL;
+    result->V_value2.V_value2_len = 0;
+    result->V_value2.V_value2_val = NULL;
+    result->N_value2 = 0;
+    result->codigo_error = 0;
+    result->codigo_error = get_value(key, value1, &N_value2, V_value2, &p);
 
+    if (result->codigo_error == -1){
+		result->value1 = malloc(1);
+    	result->value1[0] = '\0';
+    	result->V_value2.V_value2_len = 0;
+    	result->V_value2.V_value2_val = NULL;
+	
+        return TRUE;  
+	}
+    result->value1 = malloc(strlen(value1) + 1);
+	strcpy(result->value1, value1);
+    result->N_value2      = N_value2;
+
+    result->V_value2.V_value2_len = N_value2;
+    result->V_value2.V_value2_val = malloc(N_value2 * sizeof(float));
+    memcpy(result->V_value2.V_value2_val, V_value2, N_value2 * sizeof(float));
+
+    result->value3.x_rpc = p.x;
+    result->value3.y_rpc = p.y;
+    result->value3.z_rpc = p.z;
     return TRUE;
 }
 

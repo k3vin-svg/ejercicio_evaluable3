@@ -33,9 +33,19 @@ int set_value(char *key, char *value1, int N_value2, float *V_value2, struct Paq
     struct set_value_args args;
     enum clnt_stat resultado;
 
+    /*verificación de parametros y tamaño*/
+    if (key == NULL || value1 == NULL || V_value2 == NULL)
+        return -1;
+    if (N_value2 < 1 || N_value2 > 32)  
+        return -1;
+    if (strlen(key) > 255 || strlen(value1) > 255)
+        return -1;
+    /*cadenas vacías*/
+    if (strlen(key) == 0 || strlen(value1) == 0)
+    return -1;
+
     /*conectamos el servidor*/
     if (conectar_servidor() == -1) return -1;
-
     /*copiamos los datos a nuestra estructura RPC*/
     args.key = key;
     args.value1 = value1;
