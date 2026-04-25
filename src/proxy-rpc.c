@@ -4,7 +4,7 @@
 #include "claves.h"       
 #include "clavesRPC.h"    
 
-/*variable global para mantener la conexion con el servidor RPC */
+/*variable global para mantener la conexion con el servidor rpc*/
 static CLIENT *cliente = NULL;
 
 static int conectar_servidor() {
@@ -32,6 +32,7 @@ static int conectar_servidor() {
 int set_value(char *key, char *value1, int N_value2, float *V_value2, struct Paquete value3) {
     struct set_value_args args;
     enum clnt_stat resultado;
+    int res = 0;
 
     /*verificación de parametros y tamaño*/
     if (key == NULL || value1 == NULL || V_value2 == NULL)
@@ -60,8 +61,7 @@ int set_value(char *key, char *value1, int N_value2, float *V_value2, struct Paq
     args.value3.y_rpc = value3.y;
     args.value3.z_rpc = value3.z;
 
-    int ret = 0;
-    resultado = set_value_1(args,&ret, cliente);
+    resultado = set_value_1(args,&res, cliente);
 
     /*comprobamos errores de red */
     if (resultado != RPC_SUCCESS) {
@@ -69,24 +69,24 @@ int set_value(char *key, char *value1, int N_value2, float *V_value2, struct Paq
         return -1;
     }
 
-    return ret;
+    return res;
 }
 
 int delete_key(char *key) {
     enum clnt_stat resultado;
-    int ret = 0; 
+    int res = 0; 
 
     if (conectar_servidor() == -1) return -1;
 
     /*le pasamos la clave y el cliente*/
-    resultado = delete_key_1(key, &ret, cliente);
+    resultado = delete_key_1(key, &res, cliente);
 
     if (resultado != RPC_SUCCESS) {
         clnt_perror(cliente, "Error en delete_key_1");
         return -1;
     }
 
-    return ret;
+    return res;
 }
 
 int get_value(char *key, char *value1, int *N_value2, float *V_value2, struct Paquete *value3) {
@@ -126,7 +126,17 @@ int get_value(char *key, char *value1, int *N_value2, float *V_value2, struct Pa
 int modify_value(char *key, char *value1, int N_value2, float *V_value2, struct Paquete value3){
     set_value_args args;
     enum clnt_stat resultado;
-    int ret = 0;
+    int res = 0;
+    /*verificación de parametros y tamaño*/
+    if (key == NULL || value1 == NULL || V_value2 == NULL)
+        return -1;
+    if (N_value2 < 1 || N_value2 > 32)  
+        return -1;
+    if (strlen(key) > 255 || strlen(value1) > 255)
+        return -1;
+    /*cadenas vacías*/
+    if (strlen(key) == 0 || strlen(value1) == 0)
+    return -1;
 
     if (conectar_servidor() == -1) return -1;
     /*copiamos los datos a nuestra estructura RPC*/
@@ -134,48 +144,47 @@ int modify_value(char *key, char *value1, int N_value2, float *V_value2, struct 
     args.value1 = value1;
     args.N_value2 = N_value2;
     
-    /*copiamos los arrays dinámicos :tamaño y datos*/
+    /*copiamos los arrays dinámicos*/
     args.V_value2.V_value2_len = N_value2;
     args.V_value2.V_value2_val = V_value2;
-    
-    /*copiamos nuestro struct inicial */
+    /*copiamos nuestro struct inicial*/
     args.value3.x_rpc = value3.x;
     args.value3.y_rpc = value3.y;
     args.value3.z_rpc = value3.z;
 
-    resultado = modify_value_1(args, &ret, cliente);
+    resultado = modify_value_1(args, &res, cliente);
     if (resultado != RPC_SUCCESS) {
         clnt_perror(cliente, "Error en modify_value_1");
         return -1;
     }
-    return ret;
+    return res;
 
 
 }
 
 int exist(char *key){
     enum clnt_stat resultado;
-    int ret = 0;
+    int res = 0;
 
     if (conectar_servidor() == -1) return -1;
-    resultado = exist_1(key, &ret, cliente);
+    resultado = exist_1(key, &res, cliente);
     if (resultado != RPC_SUCCESS) {
         clnt_perror(cliente, "Error en exist_1");
         return -1;
     }
-    return ret;
+    return res;
 }
 
 int destroy(void){
     enum clnt_stat resultado;
-    int ret = 0;
+    int res = 0;
 
     if (conectar_servidor() == -1) return -1;
-    resultado = destroy_1(&ret, cliente);
+    resultado = destroy_1(&res, cliente);
     if (resultado != RPC_SUCCESS) {
         clnt_perror(cliente, "Error en destroy_1");
         return -1;
     }
-    return ret;
+    return res;
 
 }
